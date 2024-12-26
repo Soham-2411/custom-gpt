@@ -7,7 +7,6 @@ This project is a full-stack chat application that emulates the functionality of
 ## Features
 - **Frontend**: Interactive chat interface using React.
 - **Backend**: Spring Boot REST API for handling chat requests and responses.
-- **Persistence**: Messages are stored on the server for future retrieval.
 - **AI Integration**: Leverages OpenAI API for generating intelligent responses.
 - **Modern UI**: Clean and intuitive design for a seamless user experience.
 
@@ -55,5 +54,7 @@ This project is a full-stack chat application that emulates the functionality of
    npm install
 4. Start the React development server:
    ```properties
-   npm start or
+   npm start
+or
+   ```properties
    npm run dev 
