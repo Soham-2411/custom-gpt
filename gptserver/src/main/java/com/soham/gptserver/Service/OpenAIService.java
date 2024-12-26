@@ -6,6 +6,7 @@ import com.soham.gptserver.Models.ChatMessage;
 import com.soham.gptserver.Models.OpenAIRequest;
 import com.soham.gptserver.Models.OpenAIResponse;
 import com.soham.gptserver.Repository.ChatRepository;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,7 @@ import java.util.Collections;
 
 @Service
 public class OpenAIService {
-
+    private final Dotenv dotenv = Dotenv.load();
     @Value("${openai.api.url}")
     private String apiUrl;
 
