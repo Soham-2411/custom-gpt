@@ -44,12 +44,16 @@ This project is a full-stack chat application that emulates the functionality of
    spring.datasource.driver-class-name=org.h2.Driver
 3. Replace the YOUR_API_KEY with your actual key.
 4. Build and run the backend:
+   ```properties
    mvn clean install
    mvn spring-boot:run
 
 ### Frontend Setup
 1. Navigate to the frontend directory.
 2. Install dependencies:
-3. Start the React development server:
+   ```properties
+   npm install
+4. Start the React development server:
+   ```properties
    npm start or
-   npm run dev
+   npm run dev 
