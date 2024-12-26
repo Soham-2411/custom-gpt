@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Define the types for the parsed response item
 interface BulletPoint {
     text: string; // The text content of the bullet point
     isSubPoint: boolean; // Whether it's a subpoint

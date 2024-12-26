@@ -1,14 +1,14 @@
 import { FaPaperclip, FaArrowUp } from "react-icons/fa"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Query from "./components/Query"
 import Response from "./components/Response"
-import { sendChatRequest } from './services/chatService';
+import { API_BASE_URL, sendChatRequest } from './services/chatService';
 
 function App() {
 
   const [responseProcessing, setResponseProcessing] = useState<boolean>(false);
 
-  const [messages, setMessages] = useState<{ isUser: boolean, text: string }[]>([
+  const [messages, setMessages] = useState<{ user: boolean, text: string }[]>([
 
   ]);
 
@@ -17,14 +17,22 @@ function App() {
   const handleSend = async () => {
     if (input.trim() !== "") {
       setResponseProcessing(true);
-      setMessages([...messages, { isUser: true, text: input }])
+      setMessages([...messages, { user: true, text: input }])
       const response = await sendChatRequest(input);
       console.log(response)
-      setMessages([...messages, { isUser: true, text: input }, { isUser: false, text: response }]);
-      setInput(""); // Clear the textarea
+      setMessages([...messages, { user: true, text: input }, { user: false, text: response }]);
+      setInput("");
       setResponseProcessing(false);
     }
   };
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/chat`)
+      .then(response => response.json())
+      .then(data => setMessages(data))
+      .catch(error => console.error('Error loading chat history:', error));
+  }, []);
+
 
   return (
     <>
@@ -40,7 +48,7 @@ function App() {
           <div className="h-full overflow-y-auto pb-52">
 
             {messages.map((msg, index) => (
-              msg.isUser ? (
+              msg.user ? (
                 <Query key={index} text={msg.text} />
               ) : (
                 <Response key={index} text={msg.text} />
@@ -67,8 +75,8 @@ function App() {
               <button className="w-10 rounded-full hover:bg-gray-100 hover:bg-opacity-20 justify-center flex items-center transition ease-in">
                 <FaPaperclip />
               </button>
-              <button
-                className={`p-3 bg-white ${responseProcessing ? "opacity-20" : ""} w-10 hover:bg-gray-300 text-black rounded-full hover:cursor-pointer transition ease-in`}
+              <button disabled={responseProcessing}
+                className={`p-3 bg-white ${responseProcessing ? "opacity-20 cursor-not-allowed" : "hover:bg-gray-300 hover:cursor-pointer transition ease-in"} w-10  text-black rounded-full `}
                 onClick={handleSend}
               >
                 <FaArrowUp />

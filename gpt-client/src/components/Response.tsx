@@ -11,9 +11,11 @@ const Response: React.FC<QueryProps> = ({ text }) => {
             className={"flex justify-start mb-4 px-4 lg:ml-72 mt-10"}
         >
             <div
-                className={"max-w-lg p-4 bg-transparent text-white "}
+                className={"max-w-lg p-4 bg-transparent text-white"}
             >
-                <DisplayResponse response={text} />
+                <pre className="whitespace-pre-wrap text-sm max-w-md break-words">
+                    {text}
+                </pre>
             </div>
         </div>
     );
