@@ -1,58 +1,82 @@
+import { FaPaperclip, FaArrowUp } from "react-icons/fa"
+import { useState } from "react"
 import Query from "./components/Query"
 import Response from "./components/Response"
+import { sendChatRequest } from './services/chatService';
 
-// import './index.css'
 function App() {
+
+  const [responseProcessing, setResponseProcessing] = useState<boolean>(false);
+
+  const [messages, setMessages] = useState<{ isUser: boolean, text: string }[]>([
+
+  ]);
+
+  const [input, setInput] = useState("");
+
+  const handleSend = async () => {
+    if (input.trim() !== "") {
+      setResponseProcessing(true);
+      setMessages([...messages, { isUser: true, text: input }])
+      const response = await sendChatRequest(input);
+      console.log(response)
+      setMessages([...messages, { isUser: true, text: input }, { isUser: false, text: response }]);
+      setInput(""); // Clear the textarea
+      setResponseProcessing(false);
+    }
+  };
 
   return (
     <>
-      <div className='h-screen w-full flex flex-row'>
+      <div className="h-screen w-full flex flex-row">
         <aside className="h-screen w-60 text-center p-4 bg-sidebar">
           <h1 className="text-xl">Chats</h1>
-          <div className="text-left pl-3 mt-5 py-3 border 
-          rounded-lg border-gray-600 hover:bg-gray-700 
-          transition ease-in hover:cursor-pointer">
+          <div className="text-left pl-3 mt-5 py-3 border rounded-lg border-gray-600 hover:bg-gray-300 hover:bg-opacity-10 transition ease-in hover:cursor-pointer">
             <p className="text-sm">+ New chat</p>
           </div>
         </aside>
+
         <section className="flex-1 relative">
-          <div className="h-full overflow-y-auto">
-            <div className="">
-              <Query text="Lorem ipsum odor amet, consectetuer adipiscing elit. Sem at nisi netus ad ipsum quisque efficitur elit. Nostra class varius, ridiculus posuere velit vitae nec. Sagittis quis diam aliquet vel gravida primis. Torquent donec eleifend risus elit metus curae. Mi primis urna natoque porttitor sit tristique ac elementum."></Query>
-              <Response text="Lorem ipsum odor amet, consectetuer adipiscing elit. Sem at nisi netus ad ipsum quisque efficitur elit. Nostra class varius, ridiculus posuere velit vitae nec. Sagittis quis diam aliquet vel gravida primis. Torquent donec eleifend risus elit metus curae. Mi primis urna natoque porttitor sit tristique ac elementum."></Response>
-            </div>
+          <div className="h-full overflow-y-auto pb-52">
+
+            {messages.map((msg, index) => (
+              msg.isUser ? (
+                <Query key={index} text={msg.text} />
+              ) : (
+                <Response key={index} text={msg.text} />
+              )
+            ))}
           </div>
 
-          {/* Textbox with Send Button */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 p-4 w-[800px] mb-10">
-            <div className="bg-input rounded-3xl flex items-center flex-row justify-between">
+          <div className="absolute bg-input rounded-3xl flex flex-col bottom-0 left-1/2 transform -translate-x-1/2 p-4 w-[800px] mb-10">
+            <div className="w-full rounded-3xl flex items-center flex-row justify-between">
               <textarea
-                className="flex-1 p-3 rounded-3xl bg-input focus:outline-none resize-none"
+                className="flex-1 rounded-3xl bg-transparent focus:outline-none resize-none"
                 placeholder="Type a message..."
-              >
-              </textarea>
-              <button className="p-3 mr-2 bg-white hover:bg-gray-300 text-black rounded-full hover:cursor-pointer transition ease-in">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 17a1 1 0 01-1-1V5.414L5.707 9.707a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0l5 5a1 1 0 01-1.414 1.414L11 5.414V16a1 1 0 01-1 1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex flex-row justify-between mt-0">
+              <button className="w-10 rounded-full hover:bg-gray-100 hover:bg-opacity-20 justify-center flex items-center transition ease-in">
+                <FaPaperclip />
               </button>
-
-
+              <button
+                className={`p-3 bg-white ${responseProcessing ? "opacity-20" : ""} w-10 hover:bg-gray-300 text-black rounded-full hover:cursor-pointer transition ease-in`}
+                onClick={handleSend}
+              >
+                <FaArrowUp />
+              </button>
             </div>
           </div>
         </section>
       </div>
-
-
     </>
   )
 }
