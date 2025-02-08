@@ -19,11 +19,12 @@ public class ChatController {
     @PostMapping("/chat")
     public ResponseEntity<String> processGptResponse(@RequestBody Map<String, String> request){
         String prompt = request.get("prompt");
+        String context = request.get("context");
         if (prompt == null || prompt.isEmpty()) {
             return ResponseEntity.badRequest().body("Prompt cannot be null or empty.");
         }
         try {
-            String gptResponse = openAIService.getGptResponse(prompt);
+            String gptResponse = openAIService.getGptResponse(prompt, context);
             ChatMessage query = new ChatMessage(true, prompt);
             ChatMessage response = new ChatMessage(false, gptResponse);
             openAIService.saveMessage(query);

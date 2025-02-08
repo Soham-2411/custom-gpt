@@ -1,10 +1,7 @@
 package com.soham.gptserver.Models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +15,7 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
     private boolean isUser;
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     public ChatMessage(boolean isUser, String text){

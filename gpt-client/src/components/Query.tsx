@@ -7,10 +7,10 @@ interface QueryProps {
 const Query: React.FC<QueryProps> = ({ text }) => {
     return (
         <div
-            className={"flex justify-end mb-4 px-4 lg:mr-80 mt-10"}
+            className={"flex justify-end mb-4 px-4 mt-10"}
         >
             <div
-                className={"max-w-lg p-4 rounded-lg shadow-md bg-query text-white"}
+                className={"max-w-[90%] p-4 rounded-lg shadow-md bg-query text-white whitespace-normal break-words"}
             >
                 <p className="text-sm">{text}</p>
             </div>

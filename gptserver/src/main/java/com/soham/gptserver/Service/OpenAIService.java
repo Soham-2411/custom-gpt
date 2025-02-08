@@ -27,10 +27,11 @@ public class OpenAIService {
     @Autowired
     private RestTemplate restTemplate;
 
-   public String getGptResponse(String prompt){
+   public String getGptResponse(String prompt, String context){
+       String fullPrompt = context + "\nUser: " + prompt + "\nAssistant:";
        OpenAIRequest request = new OpenAIRequest(
                "gpt-4o",
-            prompt
+            fullPrompt
        );
        System.out.println("processed a response: " +  prompt);
        OpenAIResponse response = restTemplate.postForObject(apiUrl, request, OpenAIResponse.class);

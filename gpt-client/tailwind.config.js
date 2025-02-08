@@ -8,7 +8,7 @@ export default {
     extend: {
       colors: {
         sidebar: '#171717',
-        chatarea: '#212121',
+        chatarea: '#242424',
         input: "#2f2f2f",
         query: "#303030"
       }
