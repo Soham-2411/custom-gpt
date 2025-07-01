@@ -1,35 +1,111 @@
 import { useEffect, useState } from "react"
-import { Message } from "../types/types"
-import { sendChatRequest, API_BASE_URL } from "../services/chatService";
+import { Message, Chat } from "../types/types"
+import { sendChatRequest } from "../services/chatService";
 
 const useChat = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [activeChatId, setActiveChatId] = useState<string | null>(null);
     const [responseProcessing, setResponseProcessing] = useState<boolean>(false);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/chat`)
-            .then(response => response.json())
-            .then(data => { setMessages(data) })
-            .catch(error => console.error('Error loading chat history:', error));
+        const newChat = createNewChat();
+        setChats([newChat]);
+        setActiveChatId(newChat.id)
+
     }, []);
 
-    const handleSend = async (input: string) => {
-        if (input.trim() !== "") {
-            setResponseProcessing(true);
-            const context = messages.map((msg) => {
-                return `${msg.user ? "User" : "Assistant"}: ${msg.text}`
-            }).join("\n")
-            const updatedMessages = [...messages, { user: true, text: input }];
-            setMessages(updatedMessages);
-            const response = await sendChatRequest(input, context);
-            console.log(response)
-            setMessages([...messages, { user: true, text: input }, { user: false, text: response }]);
-            setResponseProcessing(false);
+    const createNewChat = (): Chat => {
+        return {
+            id: Date.now().toString(),
+            title: "New Chat",
+            messages: [],
+            createdAt: new Date().toISOString(),
         }
-
     };
 
-    return { messages, responseProcessing, handleSend };
+    const switchChat = (chatId: string) => {
+        setActiveChatId(chatId);
+    };
+
+    // Add a new chat
+    const addChat = () => {
+        const newChat = createNewChat();
+        setChats([...chats, newChat]);
+        setActiveChatId(newChat.id);
+    };
+
+    const deleteChat = (chatId: string) => {
+        const updatedChats = chats.filter((chat) => chat.id !== chatId);
+        setChats(updatedChats);
+        if (activeChatId === chatId) {
+            setActiveChatId(updatedChats[0]?.id || null);
+        }
+    };
+
+    const handleSend = async (input: string) => {
+
+        console.log("CALLING API")
+        console.log(activeChatId)
+        console.log(input)
+        if (!activeChatId || input.trim() === "") return;
+
+        console.log("CALLING API")
+        setResponseProcessing(true);
+        const activeChat = chats.find((chat) => chat.id === activeChatId);
+        if (!activeChat) return;
+
+        // Update UI optimistically
+        const updatedMessages: Message[] = [
+            ...activeChat.messages,
+            { user: true, text: input },
+        ];
+
+        const updatedChats = chats.map((chat) =>
+            chat.id === activeChatId
+                ? { ...chat, messages: updatedMessages }
+                : chat
+        );
+        setChats(updatedChats);
+
+        // Generate context from current chat's messages
+        const context = activeChat.messages
+            .map((msg) => `${msg.user ? "User" : "Assistant"}: ${msg.text}`)
+            .join("\n");
+
+        // Call API
+        const response = await sendChatRequest(input, context);
+
+        // Update with response
+        const finalMessages: Message[] = [
+            ...updatedMessages,
+            { user: false, text: response },
+        ];
+
+        setChats(
+            chats.map((chat) =>
+                chat.id === activeChatId
+                    ? { ...chat, messages: finalMessages }
+                    : chat
+            )
+        );
+        setResponseProcessing(false);
+    };
+
+    // Get messages for active chat
+    const messages = activeChatId
+        ? chats.find((chat) => chat.id === activeChatId)?.messages || []
+        : [];
+
+    return {
+        chats,
+        activeChatId,
+        messages,
+        responseProcessing,
+        handleSend,
+        switchChat,
+        addChat,
+        deleteChat,
+    };
 };
 
 export default useChat;

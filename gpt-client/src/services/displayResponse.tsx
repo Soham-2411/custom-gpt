@@ -11,7 +11,6 @@ interface DisplayResponseProps {
 }
 
 const DisplayResponse: React.FC<DisplayResponseProps> = ({ response }) => {
-    // Function to preprocess the response into a list of BulletPoint objects
     const parseResponse = (text: string): BulletPoint[] => {
         // Split the response into lines and map to structured BulletPoint items
         const lines = text.split('-')

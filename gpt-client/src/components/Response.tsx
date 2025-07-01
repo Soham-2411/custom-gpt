@@ -50,12 +50,36 @@ const renderMessage = (text: string) => {
             {parts.map((part, index) => {
                 if (part.type === 'code') {
                     return (
-                        <div key={index} className="">
-                            <CopyBlock
-                                text={part.content}
-                                language="python"
-                                theme={dracula}
-                            />
+                        <div key={index} className="relative w-full">
+                            <div className="overflow-x-auto w-full relative">
+                                {(() => {
+                                    const lines = part.content.split('\n');
+                                    let language = 'python';
+                                    let codeContent = part.content;
+
+                                    if (lines.length > 0 && !lines[0].includes('=') && !lines[0].includes('(') && !lines[0].includes('{')) {
+                                        language = lines[0].trim().toLowerCase();
+                                        codeContent = lines.slice(1).join('\n');
+                                    }
+
+                                    return (
+                                        <CopyBlock
+                                            text={codeContent}
+                                            language={language}
+                                            theme={dracula}
+                                            wrapLongLines={false}
+                                            customStyle={{
+                                                width: 'max-content',
+                                                minWidth: '100%',
+                                                overflowX: 'auto'
+                                            }}
+                                            codeBlockStyle={{
+                                                position: 'relative'
+                                            }}
+                                        />
+                                    );
+                                })()}
+                            </div>
                         </div>
                     );
                 } else {

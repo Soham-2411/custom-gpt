@@ -36,8 +36,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ input, onInputChange, onSen
                     onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();
+                            onSend()
                             onInputChange("")
-                            onSend();
                         }
                     }}
                     rows={1}
