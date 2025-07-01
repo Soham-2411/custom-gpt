@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Query from './Query'
 import Response from './Response'
 import { Message } from '../types/types'
@@ -11,6 +11,13 @@ interface ChatContainerProps {
 
 const ChatContainer: React.FC<ChatContainerProps> = ({ messages }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+    }, [messages]);
+
     return (
         <div className="flex justify-center h-[calc(100vh-160px)] overflow-y-auto pb-10">
             <div className="flex justify-center">
@@ -23,6 +30,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages }) => {
                                 <Response key={index} text={msg.text} />
                             )
                         )}
+                    <div ref={chatContainerRef} />
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@ export default {
         sidebar: '#171717',
         chatarea: '#242424',
         input: "#2f2f2f",
-        query: "#303030"
+        query: "#353a56"
       }
     },
   },

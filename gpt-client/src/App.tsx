@@ -1,8 +1,5 @@
-import { FaPaperclip, FaArrowUp } from "react-icons/fa"
-import { useEffect, useState, useRef } from "react"
-import Query from "./components/Query"
-import Response from "./components/Response"
-import { API_BASE_URL, sendChatRequest } from './services/chatService';
+import { useState } from "react"
+
 import Sidebar from "./components/Sidebar";
 import ChatContainer from "./components/ChatContainer";
 import MessageInput from "./components/MessageInput";
