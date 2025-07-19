@@ -1,9 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import Sidebar from "./components/Sidebar";
 import ChatContainer from "./components/ChatContainer";
 import MessageInput from "./components/MessageInput";
 import useChat from "./Hooks/useChat";
+import { getChats } from "./services/chatService";
+import { useAuth } from "./contexts/AuthContext";
 
 function App() {
 
@@ -11,6 +13,7 @@ function App() {
     chats,
     activeChatId,
     responseProcessing,
+    setChats,
     handleSend,
     switchChat,
     addChat,
@@ -19,6 +22,26 @@ function App() {
 
 
   const [input, setInput] = useState("");
+  const { user, session } = useAuth();
+
+  const loadChats = async () => {
+    try {
+      const chats = await getChats(user.id)
+      setChats(chats);
+    } catch (error) {
+      console.error("Coudn't load chats", error);
+    }
+  }
+
+  useEffect(() => {
+    loadChats();
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadChats();
+    }
+  }, []);
 
 
   return (

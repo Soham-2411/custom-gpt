@@ -2,17 +2,21 @@ import React, { useEffect, useRef } from 'react'
 import Query from './Query'
 import Response from './Response'
 import { Message } from '../types/types'
+import AuthDialog from './AuthDialog'
+import { useAuth } from '../contexts/AuthContext'
+import { getChats } from '../services/chatService'
 
 interface ChatContainerProps {
     messages: Message[]
     responseProcessing: boolean
-    activeChatId?: string  // Optional: For future chat-specific features
+    activeChatId?: string
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = ({
     messages,
     responseProcessing
 }) => {
+    const { user, session } = useAuth();
     const endOfMessagesRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -26,8 +30,25 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
         return () => clearTimeout(timer)
     }, [messages, responseProcessing])
 
+    useEffect(() => {
+        if (user) {
+            console.log('Current user:', {
+                email: user.email,
+                id: user.id,
+                fullSession: session
+            })
+        }
+        
+    }, [user])
+
+    
+
     return (
         <div className="flex justify-center h-[calc(100vh-160px)] overflow-y-auto pb-10">
+            <div className='absolute top-4 right-4'>
+                <AuthDialog />
+            </div >
+
             <div className="flex justify-center w-full">
                 <div className="w-[840px] space-y-4">
                     {messages.length === 0 ? (

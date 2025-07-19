@@ -2,7 +2,7 @@ import React from 'react'
 import { CopyBlock, dracula } from 'react-code-blocks';
 
 interface QueryProps {
-    text: string; // The message content
+    text: string;
 }
 
 const Response: React.FC<QueryProps> = ({ text }) => {
@@ -13,8 +13,8 @@ const Response: React.FC<QueryProps> = ({ text }) => {
             <div
                 className={"p-4 w-full text-white"}
             >
-                <p className="whitespace-pre-wrap text-md max-w-[90%] break-words "> {renderMessage(text)}
-                </p>
+                <div className="whitespace-pre-wrap text-md max-w-[90%] break-words "> {renderMessage(text)}
+                </div>
             </div>
         </div>
     );
@@ -29,6 +29,9 @@ const renderMessage = (text: string) => {
 
     const parts = [];
     let lastIndex = 0;
+    if (text === null || text === undefined) {
+        return "Nothing to write";
+    }
 
     text.replace(codeBlockRegex, (match, codeBlock, offset) => {
         if (offset > lastIndex) {

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 import { Message, Chat } from "../types/types"
 import { sendChatRequest } from "../services/chatService";
+import { useAuth } from "../contexts/AuthContext";
 
 const useChat = () => {
     const [chats, setChats] = useState<Chat[]>([]);
     const [activeChatId, setActiveChatId] = useState<string | null>(null);
     const [responseProcessing, setResponseProcessing] = useState<boolean>(false);
+    const { user } = useAuth();
 
     useEffect(() => {
         const newChat = createNewChat();
@@ -16,7 +18,7 @@ const useChat = () => {
 
     const createNewChat = (): Chat => {
         return {
-            id: Date.now().toString(),
+            id: crypto.randomUUID(),
             title: "New Chat",
             messages: [],
             createdAt: new Date().toISOString(),
@@ -27,7 +29,6 @@ const useChat = () => {
         setActiveChatId(chatId);
     };
 
-    // Add a new chat
     const addChat = () => {
         const newChat = createNewChat();
         setChats([...chats, newChat]);
@@ -44,17 +45,13 @@ const useChat = () => {
 
     const handleSend = async (input: string) => {
 
-        console.log("CALLING API")
-        console.log(activeChatId)
         console.log(input)
         if (!activeChatId || input.trim() === "") return;
 
-        console.log("CALLING API")
         setResponseProcessing(true);
         const activeChat = chats.find((chat) => chat.id === activeChatId);
         if (!activeChat) return;
 
-        // Update UI optimistically
         const updatedMessages: Message[] = [
             ...activeChat.messages,
             { user: true, text: input },
@@ -67,13 +64,22 @@ const useChat = () => {
         );
         setChats(updatedChats);
 
-        // Generate context from current chat's messages
         const context = activeChat.messages
             .map((msg) => `${msg.user ? "User" : "Assistant"}: ${msg.text}`)
             .join("\n");
+        const response = await sendChatRequest(input, context, activeChatId, user.id);
+        // const shouldGenerateTitle = activeChat.messages.length === 0;
+        // let title = activeChat.title;
+        // if (shouldGenerateTitle) {
 
-        // Call API
-        const response = await sendChatRequest(input, context);
+        //     try {
+        //         console.log("Prompt for Title: ", title)
+        //         title = await sendTitleRequest(input);
+        //         title = title.replace(/['"]+/g, '').substring(0, 30);
+        //     } catch (error) {
+        //         title = input.substring(0, 30) || "New Chat";
+        //     }
+        // }
 
         // Update with response
         const finalMessages: Message[] = [
@@ -101,6 +107,7 @@ const useChat = () => {
         activeChatId,
         messages,
         responseProcessing,
+        setChats,
         handleSend,
         switchChat,
         addChat,
